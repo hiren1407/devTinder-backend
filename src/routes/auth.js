@@ -14,7 +14,7 @@ authRouter.post("/signup", async (req, res) => {
 
     // Encrypt the password
     const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
+    
 
     //   Creating a new instance of the User model
     const user = new User({
@@ -24,9 +24,15 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     });
 
-    await user.save();
-    res.send("User Added successfully!");
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+    res.json({ message: "User Added successfully!", data: savedUser });
+
   } catch (err) {
+    console.log(err)
     res.status(400).send("ERROR : " + err.message);
   }
 });
@@ -47,7 +53,7 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
       });
-      res.send("Login Successful!!!");
+      res.send(user);
     } else {
       throw new Error("Invalid credentials");
     }
