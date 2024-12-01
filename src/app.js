@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const cors=require("cors")
 
 app.use(cors({
-  origin: "https://devtinder-ui-2.onrender.com",
+  origin: "https://hiren-dev-tinder-ui.vercel.app",
   credentials: true
 }));
 
